@@ -8,7 +8,7 @@ import main_ui as ui2
 BUFSIZE = 1024 * 4
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 root = tk.Tk()
-root.geometry("880x600") #1000 la nguyen ban
+root.geometry("1000x600") #1000 la nguyen ban
 root.configure(bg = "#FFFFFF")
 root.title('Client')
 root.resizable(False, False)
