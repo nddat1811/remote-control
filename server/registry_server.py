@@ -1,7 +1,6 @@
 import re, winreg, json
 import os
 
-from live_screen_client import BUFSIZ
 
 def parse_data(full_path):
     try:
@@ -135,15 +134,15 @@ def delete_key(full_path):
         return ["0", "0"]
 
 def registry(client):
-    BUFSIZ = 32768
+    BUFSIZE = 32768
     while True:
-        header = client.recv(BUFSIZ).decode("utf8")
+        header = client.recv(BUFSIZE).decode("utf8")
         if("STOP_EDIT_REGISTRY" in header):
             break
         data_sz = int(header)
         data = b""
         while len(data) < data_sz:
-            packet = client.recv(BUFSIZ)
+            packet = client.recv(BUFSIZE)
             data += packet
 
         msg = json.loads(data.decode('utf8'))
