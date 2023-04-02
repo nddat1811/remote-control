@@ -3,6 +3,10 @@ import tkinter as tk
 import sys
 import mac_address_server as mac
 import shutdown_logout_server as sl
+import directory_tree_server as dt
+import live_screen_server as lss
+import app_process_server as ap
+import registry_server as rs
 
 #Global variables
 global client
@@ -11,6 +15,26 @@ BUFSIZE = 1024 * 4
 def mac_address():
     global client
     mac.mac_address(client)
+    return
+
+def directory_tree():
+    global client 
+    dt.directory(client)
+    return
+
+def live_screen():
+    global client
+    lss.capture_screen(client)
+    return
+
+def app_process():
+    global client
+    ap.app_process(client)
+    return
+
+def registry():
+    global client
+    rs.registry(client)
     return
 
 def shutdown_logout():
@@ -37,16 +61,16 @@ def Connect():
             mac_address()
         # elif "KEYLOG" in msg:
         #     keylogger()
+        elif "DIRECTORY" in msg:
+            directory_tree()
+        elif "LIVESCREEN" in msg:
+            live_screen()
+        elif "APP_PRO" in msg:
+            app_process()
         
-        # elif "LIVESCREEN" in msg:
-        #     live_screen()
-        # elif "APP_PRO" in msg:
-        #     app_process()
         
-        # elif "DIRECTORY" in msg:
-        #     directory_tree()
-        # elif "REGISTRY" in msg:
-        #     registry()
+        elif "REGISTRY" in msg:
+            registry()
         elif "SD_LO" in msg:
             shutdown_logout()
        
