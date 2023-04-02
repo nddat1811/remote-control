@@ -3,7 +3,7 @@ from tkinter import  ttk
 import pickle, struct
 from tkinter import Canvas, Button, PhotoImage
 
-BUFSIZ = 1024 * 4
+BUFSIZE = 1024 * 4
 import os
 import sys
 def abs_path(file_name):
@@ -49,7 +49,7 @@ def send_kill(client):
     global pid
     client.sendall(bytes("0", "utf8"))
     client.sendall(bytes(str(pid.get()), "utf8"))
-    res = client.recv(BUFSIZ).decode("utf8")
+    res = client.recv(BUFSIZE).decode("utf8")
     if "1" in res:
         tk.messagebox.showinfo(message = "Đã diệt!")
     else:
