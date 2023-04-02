@@ -2,6 +2,7 @@ import socket
 import tkinter as tk
 import sys
 import mac_address_server as mac
+import shutdown_logout_server as sl
 
 #Global variables
 global client
@@ -10,6 +11,11 @@ BUFSIZE = 1024 * 4
 def mac_address():
     global client
     mac.mac_address(client)
+    return
+
+def shutdown_logout():
+    global client
+    sl.shutdown_logout(client)
     return
 
 def Connect():
@@ -31,8 +37,7 @@ def Connect():
             mac_address()
         # elif "KEYLOG" in msg:
         #     keylogger()
-        # elif "SD_LO" in msg:
-        #     shutdown_logout()
+        
         # elif "LIVESCREEN" in msg:
         #     live_screen()
         # elif "APP_PRO" in msg:
@@ -42,6 +47,8 @@ def Connect():
         #     directory_tree()
         # elif "REGISTRY" in msg:
         #     registry()
+        elif "SD_LO" in msg:
+            shutdown_logout()
        
 ###############################################################################    
 

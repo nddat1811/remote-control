@@ -8,7 +8,6 @@ import shutdown_logout_client as sl
 import directory_tree_client as dt
 import live_screen_client as lsc
 import app_process_client as ap
-import registry_client as rc
 
 #global variables
 BUFSIZE = 1024 * 4
@@ -48,6 +47,7 @@ def directory_tree():
     tmp = dt.DirectoryTree_UI(root, client)
     tmp.button_6.configure(command = lambda: back_directory_tree(tmp))
     return
+
 # 4 Xem màn hình trực tiếp (Live Screen)
 def live_screen():
     client.sendall(bytes("LIVESCREEN", "utf8"))
@@ -61,17 +61,6 @@ def app_process():
     tmp = ap.App_Process_UI(root, client)
     tmp.button_6.configure(command = lambda: back(tmp))
     return
-# 6 Xem Registry (Registry)
-def back_reg(ui):
-    ui.client.sendall(bytes("STOP_EDIT_REGISTRY", "utf8"))
-    ui.place_forget()
-    f2.place(x = 0, y = 0)
-
-def registry():
-    client.sendall(bytes("REGISTRY", "utf8"))
-    tmp = rc.Registry_UI(root, client)
-    tmp.btn_back.configure(command=lambda: back_reg(tmp))
-    return
 # 7 Tắt máy hoặc thoát khỏi màn hình desktop (Shutdown/Logout)
 def shutdown_logout():
     client.sendall(bytes("SD_LO", "utf8"))
@@ -82,17 +71,18 @@ def shutdown_logout():
 
 
 
-
+# 7.	Xem Registry (Registry)
 def show_main_ui():
     f1.place_forget()
     global f2
     f2 = ui2.Main_UI(root)
     f2.button_mac_addr.configure(command = mac_address)
+    # f2.button_1.configure(command = live_screen)
+    # f2.button_2.configure(command = registry)
+    
+    # f2.button_4.configure(command = directory_tree)
+    # f2.button_5.configure(command = app_process)    
     # f2.button_7.configure(command = keylogger)
-    f2.button_directory_tree.configure(command = directory_tree)
-    f2.button_livescreen.configure(command = live_screen)
-    f2.button_app_process.configure(command = app_process)    
-    f2.button_registry.configure(command = registry)    
     f2.button_shudown_logout.configure(command = shutdown_logout)
     f2.button_disconnect.configure(command = disconnect)
     return
