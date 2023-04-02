@@ -28,10 +28,10 @@ class Main_UI(Canvas):
         # anhr nen
         self.place(x = 0, y = 0)
         self.image_image_1 = PhotoImage(
-            file=abs_path("image_1.png"))
+            file=abs_path("image_10.png"))
         self.image_1 = self.create_image(
             500.0,
-            306.5,
+            300.0,
             image=self.image_image_1
         )
         # cai khung

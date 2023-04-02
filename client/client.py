@@ -87,14 +87,14 @@ def show_main_ui():
     f1.place_forget()
     global f2
     f2 = ui2.Main_UI(root)
-    f2.button_mac_addr.configure(command = mac_address)
-    # f2.button_7.configure(command = keylogger)
-    f2.button_directory_tree.configure(command = directory_tree)
-    f2.button_livescreen.configure(command = live_screen)
-    f2.button_app_process.configure(command = app_process)    
-    f2.button_registry.configure(command = registry)    
-    f2.button_shudown_logout.configure(command = shutdown_logout)
-    f2.button_disconnect.configure(command = disconnect)
+    # f2.button_mac_addr.configure(command = mac_address)
+    # # f2.button_7.configure(command = keylogger)
+    # f2.button_directory_tree.configure(command = directory_tree)
+    # f2.button_livescreen.configure(command = live_screen)
+    # f2.button_app_process.configure(command = app_process)    
+    # f2.button_registry.configure(command = registry)    
+    # f2.button_shudown_logout.configure(command = shutdown_logout)
+    # f2.button_disconnect.configure(command = disconnect)
     return
 
 
@@ -108,6 +108,6 @@ def connect():
     except:
         tk.messagebox.showerror(message = "Cannot connect!")       
     return
-# show_main_ui()
-f1.button_connect.configure(command = connect)
+show_main_ui()
+# f1.button_connect.configure(command = connect)
 root.mainloop()
