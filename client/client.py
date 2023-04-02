@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.messagebox
 import entrance_ui as ui1
 import main_ui as ui2
+import mac_address_client as mac
 
 #global variables
 BUFSIZE = 1024 * 4
@@ -26,18 +27,24 @@ def disconnect():
     client.sendall(bytes("QUIT", "utf8"))
     return
 
+def mac_address():
+    client.sendall(bytes("MAC", "utf8"))
+    mac.mac_address(client)
+    return
+
 def show_main_ui():
     f1.place_forget()
     global f2
     f2 = ui2.Main_UI(root)
+    f2.button_mac_addr.configure(command = mac_address)
     # f2.button_1.configure(command = live_screen)
     # f2.button_2.configure(command = registry)
-    # f2.button_3.configure(command = mac_address)
+    
     # f2.button_4.configure(command = directory_tree)
-    # f2.button_5.configure(command = app_process)
-    # f2.button_6.configure(command = disconnect)
+    # f2.button_5.configure(command = app_process)    
     # f2.button_7.configure(command = keylogger)
     # f2.button_8.configure(command = shutdown_logout)
+    f2.button_disconnect.configure(command = disconnect)
     return
 
 
@@ -51,6 +58,6 @@ def connect():
     except:
         tk.messagebox.showerror(message = "Cannot connect!")       
     return
-show_main_ui()
-#f1.button_connect.configure(command = connect)
+# show_main_ui()
+f1.button_connect.configure(command = connect)
 root.mainloop()

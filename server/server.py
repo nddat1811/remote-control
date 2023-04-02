@@ -1,7 +1,16 @@
 import socket
 import tkinter as tk
 import sys
+import mac_address_server as mac
 
+#Global variables
+global client
+BUFSIZE = 1024 * 4
+
+def mac_address():
+    global client
+    mac.mac_address(client)
+    return
 
 def Connect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,26 +21,28 @@ def Connect():
     s.listen(100)
     global client
     client, addr = s.accept()
-    # while True:
-    #     msg = client.recv(BUFSIZ).decode("utf8")
-    #     if "KEYLOG" in msg:
-    #         keylogger()
-    #     elif "SD_LO" in msg:
-    #         shutdown_logout()
-    #     elif "LIVESCREEN" in msg:
-    #         live_screen()
-    #     elif "APP_PRO" in msg:
-    #         app_process()
-    #     elif "MAC" in msg:
-    #         mac_address()
-    #     elif "DIRECTORY" in msg:
-    #         directory_tree()
-    #     elif "REGISTRY" in msg:
-    #         registry()
-    #     elif "QUIT" in msg:
-    #         client.close()
-    #         s.close()
-    #         return
+    while True:
+        msg = client.recv(BUFSIZE).decode("utf8")
+        if "QUIT" in msg:
+            client.close()
+            s.close()
+            return
+        elif "MAC" in msg:
+            mac_address()
+        # elif "KEYLOG" in msg:
+        #     keylogger()
+        # elif "SD_LO" in msg:
+        #     shutdown_logout()
+        # elif "LIVESCREEN" in msg:
+        #     live_screen()
+        # elif "APP_PRO" in msg:
+        #     app_process()
+        
+        # elif "DIRECTORY" in msg:
+        #     directory_tree()
+        # elif "REGISTRY" in msg:
+        #     registry()
+       
 ###############################################################################    
 
 
