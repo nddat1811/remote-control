@@ -9,6 +9,7 @@ import directory_tree_client as dt
 import live_screen_client as lsc
 import app_process_client as ap
 import registry_client as rc
+import keylogger_client as klc
 
 #global variables
 BUFSIZE = 1024 * 4
@@ -35,6 +36,12 @@ def disconnect():
 def mac_address():
     client.sendall(bytes("MAC", "utf8"))
     mac.mac_address(client)
+    return
+# 2 Lắng nghe phím (Keylogger)
+def keylogger():
+    client.sendall(bytes("KEYLOG", "utf8"))
+    tmp = klc.Keylogger_UI(root, client)
+    tmp.button_6.configure(command = lambda: back(tmp))
     return
 # 3 Xem cây thư mục (Directory Tree)
 def back_directory_tree(ui):
@@ -78,23 +85,18 @@ def shutdown_logout():
     sl.shutdown_logout(client, root)
     return
 
-# 2.	Lắng nghe phím (Keylogger)
-
-
-
-
 def show_main_ui():
     f1.place_forget()
     global f2
     f2 = ui2.Main_UI(root)
-    # f2.button_mac_addr.configure(command = mac_address)
-    # # f2.button_7.configure(command = keylogger)
-    # f2.button_directory_tree.configure(command = directory_tree)
-    # f2.button_livescreen.configure(command = live_screen)
-    # f2.button_app_process.configure(command = app_process)    
-    # f2.button_registry.configure(command = registry)    
-    # f2.button_shudown_logout.configure(command = shutdown_logout)
-    # f2.button_disconnect.configure(command = disconnect)
+    f2.button_mac_addr.configure(command = mac_address)
+    f2.button_keylogger.configure(command = keylogger)
+    f2.button_directory_tree.configure(command = directory_tree)
+    f2.button_livescreen.configure(command = live_screen)
+    f2.button_app_process.configure(command = app_process)    
+    f2.button_registry.configure(command = registry)    
+    f2.button_shudown_logout.configure(command = shutdown_logout)
+    f2.button_disconnect.configure(command = disconnect)
     return
 
 
@@ -108,6 +110,6 @@ def connect():
     except:
         tk.messagebox.showerror(message = "Cannot connect!")       
     return
-show_main_ui()
-# f1.button_connect.configure(command = connect)
+# show_main_ui()
+f1.button_connect.configure(command = connect)
 root.mainloop()

