@@ -29,8 +29,7 @@ def _print(client, textbox):
     print("  ")
     data = client.recv(BUFSIZE).decode("utf8")
     #data = data.replace("'", "")
-    print("dataa: ", data)
-    data = data[1:]
+    # data = data[1:]
     textbox.config(state = "normal")
     textbox.insert(tk.END, data)
     textbox.config(state = "disable")

