@@ -71,3 +71,4 @@ if __name__ == '__main__':
     main()
 
 #https://www.youtube.com/watch?v=HNtPG5ltFf8
+#https://developers.google.com/gmail/api/guides/labels
