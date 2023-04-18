@@ -1,56 +1,106 @@
-from __future__ import print_function
+import socket
+import tkinter as tk
+import sys
+import mac_address_server as mac
+import shutdown_logout_server as sl
+import directory_tree_server as dt
+import live_screen_server as lss
+import app_process_server as ap
+import registry_server as rs
+import keylogger_server as kls
 
-import os.path
+#Global variables
+global client
+BUFSIZE = 1024 * 4
 
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
+def mac_address():
+    global client
+    mac.mac_address(client)
+    return
 
-# If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+def directory_tree():
+    global client 
+    dt.directory(client)
+    return
 
+def live_screen():
+    global client
+    lss.capture_screen(client)
+    return
 
-def main():
-    """Shows basic usage of the Gmail API.
-    Lists the user's Gmail labels.
-    """
-    creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next runserver\credentials.json
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+def app_process():
+    global client
+    ap.app_process(client)
+    return
 
-    try:
-        # Call the Gmail API
-        service = build('gmail', 'v1', credentials=creds)
-        results = service.users().labels().list(userId='me').execute()
-        labels = results.get('labels', [])
+def registry():
+    global client
+    rs.registry(client)
+    return
 
-        if not labels:
-            print('No labels found.')
+def shutdown_logout():
+    global client
+    sl.shutdown_logout(client)
+    return
+
+def keylogger():
+    global client
+    kls.keylogger(client)
+    return
+
+def Connect():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = ''
+    port = 5656
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind((host, port))
+    s.listen(100)
+    global client
+    client, addr = s.accept()
+    while True:
+        msg = client.recv(BUFSIZE).decode("utf8")
+        if "QUIT" in msg:
+            client.close()
+            s.close()
             return
-        print('Labels:')
-        for label in labels:
-            print(label['name'])
+        elif "MAC" in msg:
+            mac_address()
+        elif "KEYLOG" in msg:
+            keylogger()
+        elif "DIRECTORY" in msg:
+            directory_tree()
+        elif "LIVESCREEN" in msg:
+            live_screen()
+        elif "APP_PRO" in msg:
+            app_process()       
+        elif "REGISTRY" in msg:
+            registry()
+        elif "SD_LO" in msg:
+            shutdown_logout()
+       
+###############################################################################    
 
-    except HttpError as error:
-        # TODO(developer) - Handle errors from gmail API.
-        print(f'An error occurred: {error}')
 
 
-if __name__ == '__main__':
-    main()
+def create_window():
+    # create Tk
+    root = tk.Tk()
+    # set window size
+    root.geometry("200x200")
+    # set name
+    root.title("Server")
+    # set background color #B4E4FF
+    root['bg'] = '#B4E4FF'
+
+    # create button OPEN
+    tk.Button(root, text = "OPEN", width = 10, height = 2, fg = '#FFFFFF', bg = '#2B3467', 
+        borderwidth=0, highlightthickness=0, command = Connect, relief="flat").place(x = 100, y = 100, anchor = "center")
+    
+    # Vòng lặp chạy chương trình
+    root.mainloop()
+
+
+create_window()
+
+
+
