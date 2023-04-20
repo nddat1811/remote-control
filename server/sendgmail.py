@@ -12,7 +12,10 @@ flow = InstalledAppFlow.from_client_secrets_file('C:/Users/Admin/Documents/GitHu
 creds = flow.run_local_server(port=0)
 
 service = build('gmail', 'v1', credentials=creds)
-message_body = 'mac' # sử dụng phương thức format() để thêm giá trị vào nội dung email
+message_body = 'PRINT' # sử dụng phương thức format() để thêm giá trị vào nội dung email
+#"HOOK"
+#"PRINT"
+#"LOCK"
 message = MIMEText(message_body)
 
 message['to'] = 'testpython18mmt@gmail.com'
