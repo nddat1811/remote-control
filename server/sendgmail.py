@@ -12,12 +12,11 @@ flow = InstalledAppFlow.from_client_secrets_file('C:/Users/Admin/Documents/GitHu
 creds = flow.run_local_server(port=0)
 
 service = build('gmail', 'v1', credentials=creds)
-node_hex = str(hex(uuid.getnode()))  # chuyển đổi giá trị thành chuỗi
-message_body = 'This is the body of the email, {}.'.format(node_hex)  # sử dụng phương thức format() để thêm giá trị vào nội dung email
+message_body = 'mac' # sử dụng phương thức format() để thêm giá trị vào nội dung email
 message = MIMEText(message_body)
 
 message['to'] = 'testpython18mmt@gmail.com'
-message['subject'] = 'action'
+message['subject'] = 'client'
 create_message = {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
 try:
