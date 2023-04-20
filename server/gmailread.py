@@ -9,12 +9,17 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import base64
 import email
+import time
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+SCOPES = [
+    "https://www.googleapis.com/auth/gmail.send",
+    "https://www.googleapis.com/auth/gmail.modify",
+    'https://www.googleapis.com/auth/gmail.readonly'
+]
 
 
-def main():
+def read_mail():
     """Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
     """
@@ -40,46 +45,43 @@ def main():
     try:
         # Call the Gmail API
         service = build('gmail', 'v1', credentials=creds)
-        results = service.users().messages().list(userId='me').execute()
+        # query list message with subject client and not read
+        results = service.users().messages().list(userId='me', q='is:unread subject:client').execute()
         mes = results.get('messages', [])
         if not mes:
-            print("no")
+            print("No letter find out")
         else:
             for m in mes:
-                """
-                ok duọc roi
-                """
-                # msg = service.users().messages().get(userId='me', id=m['id'], format="full").execute()
-                # payload = msg['payload']
-                # headers = payload['headers']
-                # for d in headers:
-                #     if d['name'] == 'Subject' or d['name'] == 'subject':
-                #         subject = d['value']
-                #         print(subject)
-                # print(msg['snippet']) #noi dung
-                """"""
                  # Call the Gmail v1 API, retrieve message data.
                 message = service.users().messages().get(userId='me', id=m['id'], format='raw').execute()
 
-                # Parse the raw message.
-                mime_msg = email.message_from_bytes(base64.urlsafe_b64decode(message['raw']))
+                get_info_message(message)
 
-                print('from', mime_msg['from'])
-                print('to', mime_msg['to'])
-                print('subject', mime_msg['subject'])
-                print("----------------------------------------------------")
-                
-                # Message snippet only.
-                print('Message snippet: %s' % message['snippet'])  #do gửi qua chuỗi ngắn --> làm oke chứ chuỗi dài thì khó
+                # Mark read letter from gmail
+                mark_as_read(service, m)
+                #print('Message snippet: %s' % message['snippet'])  #do gửi qua chuỗi ngắn --> làm oke chứ chuỗi dài thì khó
                 print("------------------------------------------------------------------\n\n\n")
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
         print(f'An error occurred: {error}')
+def get_info_message(message):
+    # Parse the raw message.
+    mime_msg = email.message_from_bytes(base64.urlsafe_b64decode(message['raw']))
 
+    print('from', mime_msg['from'])
+    print('to', mime_msg['to'])
+    print('subject', mime_msg['subject'])
+    print("----------------------------------------------------")
+def mark_as_read(service, m):
+    service.users().messages().modify(userId='me', id=m['id'], body={'removeLabelIds': ['UNREAD']}).execute()
+    return
 
 if __name__ == '__main__':
-    main()
+    while True:
+
+        read_mail()
+        time.sleep(10)
 
 # https://skillshats.com/blogs/send-and-read-emails-with-gmail-api/ link có hết
 #https://www.youtube.com/watch?v=HNtPG5ltFf8
