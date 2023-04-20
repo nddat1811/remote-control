@@ -81,5 +81,6 @@ def main():
 if __name__ == '__main__':
     main()
 
+# https://skillshats.com/blogs/send-and-read-emails-with-gmail-api/ link có hết
 #https://www.youtube.com/watch?v=HNtPG5ltFf8
 #https://developers.google.com/gmail/api/guides/labels
