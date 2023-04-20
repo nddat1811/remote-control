@@ -17,7 +17,7 @@ message_body = 'This is the body of the email, {}.'.format(node_hex)  # sá»­ dá»
 message = MIMEText(message_body)
 
 message['to'] = 'testpython18mmt@gmail.com'
-message['subject'] = 'action'
+message['subject'] = 'test'
 create_message = {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
 try:
