@@ -1,4 +1,6 @@
 import uuid
 def mac_address(client):
-    client.sendall(bytes(hex(uuid.getnode()), "utf8"))
+    mac = hex(uuid.getnode())
+    print("mac ne: ", mac)
+    client.sendall(bytes(mac, "utf8"))
     return

