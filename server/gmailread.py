@@ -41,7 +41,7 @@ def send_mail(cmd, package):
             token.write(creds.to_json())
 
     service = build('gmail', 'v1', credentials=creds)
-    message_body = '{}: {}'.format(cmd, package)  # sử dụng phương thức format() để thêm giá trị vào nội dung email
+    message_body = '{}:{}'.format(cmd, package)  # sử dụng phương thức format() để thêm giá trị vào nội dung email
     message = MIMEText(message_body)
 
     message['to'] = 'testpython18mmt@gmail.com'
