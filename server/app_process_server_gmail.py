@@ -2,13 +2,6 @@ import  pickle, psutil, struct
 import os
 import gmailread as g
 
-BUFSIZE = 1024 * 4
-
-def send_data(cmd, data):
-    size = struct.pack('!I', len(data))
-    data = size + data
-    g.send_mail(cmd, data)
-    return
 
 def list_apps():
     ls1 = list()
@@ -48,10 +41,7 @@ def list_apps():
             ls3.append(threads)
         except:
             pass
-    print("ls1:", ls1)
     return ls1, ls2, ls3
-
-
 
 def list_processes():
     ls1 = list()
@@ -71,7 +61,7 @@ def list_processes():
     return ls1, ls2, ls3
 
 def kill(pid):
-    cmd = 'taskkill.exe /F /PID ' + str(pid)
+    cmd = 'taskkill.exe /F /PID ' + pid
     try:
         a = os.system(cmd)
         if a == 0:
@@ -82,73 +72,59 @@ def kill(pid):
         return 0
     
 def start(name):
-    os.system(name)
-    return
+    print("zoxxx:")
+    cmd = 'start ' + name
+    try:
+        a = os.system(cmd)
+        if a == 0:
+            return 1
+        else:
+            return 0
+    except:
+        return 0
 
 def app_process():
     global msg
     while True:
         msg = g.read_mail()
-        if "QUIT" in msg and len(msg) < 20:
+        if "QUIT" in msg:
             return
-        res = 0
         ls1 = list()
         ls2 = list()
         ls3 = list()
-        
+        res =""
+        #xem process 
         if msg == "PROCESS":
-            print("zo day:")
             ls1, ls2, ls3 = list_apps()
             action = 1
         elif msg == "APPLICATION":
-            print("zo day22:")
             ls1, ls2, ls3 = list_processes()
             action = 1
-        elif msg != "no": 
-            action = int(msg)
+        elif "KILL" in msg:
+            tmp = msg.split(":")
+            pid = tmp[1]
+            try:
+                if kill(pid) == 1:
+                    g.send_mail("KILL","SUCCESS")
+                else:
+                    g.send_mail("KILL","UN")
+            except:
+                g.send_mail("KILL","UN") 
+        elif "START" in msg:
+            print("zoxxx:")
+            tmp = msg.split(":")
+            pname = tmp[1]
+            try:
+                if start(pname) == 1:
+                    g.send_mail("START","SUCCESS")
+                else:
+                    g.send_mail("START","UN")
+            except:
+                g.send_mail("START","UN") 
         else:
             action = -1
-        #0-kill
-        if action == 0:
-            pid = g.read_mail()
-            pid = int(pid)
-            try:
-                res = kill(pid)
-            except:
-                res = 0
-        #1-xem
-        # elif action == 1:
-        #     try:
-        #         status = g.read_mail()
-        #         if "PROCESS" in status:
-        #             ls1, ls2, ls3 = list_apps()
-        #         else:
-        #             ls1, ls2, ls3 = list_processes()
-        #         res = 1
-        #     except:
-        #         res = 0
-        #2-xoa
-        elif action == 2:
-            res = 1
-        #3 - start
-        elif action == 3:
-            pname = g.read_mail()
-            try:
-                start(pname)
-                res = 1
-            except:
-                res = 0
-        if action != 1 and action != 3 and action != -1:
-            g.send_mail("kill|xoa: ", res)
-            # client.sendall(bytes(str(res), "utf8"))
-        #send list app/process
+
         if action == 1:
-            #ls1 = pickle.dumps(ls1)
-            #ls2 = pickle.dumps(ls2)
-            #ls3 = pickle.dumps(ls3)
             g.send_mail("ls1", ls1)
             g.send_mail("ls2", ls2)
             g.send_mail("ls3", ls3)
-            #send_data("ls1", ls1)   
-            #send_data("ls2", ls2)
-            #send_data("ls3", ls3)
