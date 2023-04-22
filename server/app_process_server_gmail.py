@@ -48,6 +48,7 @@ def list_apps():
             ls3.append(threads)
         except:
             pass
+    print("ls1:", ls1)
     return ls1, ls2, ls3
 
 
@@ -94,7 +95,16 @@ def app_process():
         ls1 = list()
         ls2 = list()
         ls3 = list()
-        if msg != "no": 
+        
+        if msg == "PROCESS":
+            print("zo day:")
+            ls1, ls2, ls3 = list_apps()
+            action = 1
+        elif msg == "APPLICATION":
+            print("zo day22:")
+            ls1, ls2, ls3 = list_processes()
+            action = 1
+        elif msg != "no": 
             action = int(msg)
         else:
             action = -1
@@ -107,16 +117,16 @@ def app_process():
             except:
                 res = 0
         #1-xem
-        elif action == 1:
-            try:
-                status = g.read_mail()
-                if "PROCESS" in status:
-                    ls1, ls2, ls3 = list_apps()
-                else:
-                    ls1, ls2, ls3 = list_processes()
-                res = 1
-            except:
-                res = 0
+        # elif action == 1:
+        #     try:
+        #         status = g.read_mail()
+        #         if "PROCESS" in status:
+        #             ls1, ls2, ls3 = list_apps()
+        #         else:
+        #             ls1, ls2, ls3 = list_processes()
+        #         res = 1
+        #     except:
+        #         res = 0
         #2-xoa
         elif action == 2:
             res = 1
@@ -133,10 +143,12 @@ def app_process():
             # client.sendall(bytes(str(res), "utf8"))
         #send list app/process
         if action == 1:
-            ls1 = pickle.dumps(ls1)
-            ls2 = pickle.dumps(ls2)
-            ls3 = pickle.dumps(ls3)
-
-            send_data("ls1", ls1)   
-            send_data("ls2", ls2)
-            send_data("ls3", ls3)
+            #ls1 = pickle.dumps(ls1)
+            #ls2 = pickle.dumps(ls2)
+            #ls3 = pickle.dumps(ls3)
+            g.send_mail("ls1", ls1)
+            g.send_mail("ls2", ls2)
+            g.send_mail("ls3", ls3)
+            #send_data("ls1", ls1)   
+            #send_data("ls2", ls2)
+            #send_data("ls3", ls3)
