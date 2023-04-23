@@ -18,6 +18,7 @@ import k as kls
 import app_process_server_gmail as ap
 import shutdown_logout_server_gmail as sl
 import directory_tree_server_gmail as dt
+import registry_server_gmail as rs
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
@@ -152,6 +153,9 @@ def shutdown_logout():
 def directory_tree():
     dt.directory()
     return
+def registry():
+    rs.registry()
+    return
 
 def Connect():
     while True:
@@ -168,8 +172,8 @@ def Connect():
         #     live_screen()
         elif "APP_PRO" in cmd:
             app_process()       
-        # elif "REGISTRY" in cmd:
-        #     registry()
+        elif "REGISTRY" in cmd:
+            registry()
         elif "SD_LO" in cmd:
             shutdown_logout() 
 
