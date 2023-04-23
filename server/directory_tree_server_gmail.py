@@ -51,7 +51,7 @@ def delete_file():
                 g.send_mail("DELFILE", "error")
                 return
 
-# # copy file from client to server
+# copy file from client to server
 # def copy_file_to_server(sock):
 #     received = sock.recv(BUFSIZE).decode()
 #     if (received == "-1"):
@@ -75,18 +75,19 @@ def delete_file():
 #     except:
 #         sock.sendall("-1".encode())
 
-# # copy file from server to client
-# def copyFileToClient(sock):
-#     filename = sock.recv(BUFSIZE).decode()
-#     if filename == "-1" or not os.path.isfile(filename):
-#         sock.sendall("-1".encode())
-#         return
-#     filesize = os.path.getsize(filename)
-#     sock.sendall(str(filesize).encode())
-#     temp = sock.recv(BUFSIZE)
-#     with open(filename, "rb") as f:
-#         data = f.read()
-#         sock.sendall(data)
+# copy file from server to client
+def copy_file_to_client():
+    while True:
+        letter = g.read_mail()
+        if "FILENAME" in letter:
+            filename = letter.split("FILENAME:")[1]
+            if filename == "-1" or not os.path.isfile(filename):
+                g.send_mail("FILE_TO_CLIENT", "NOTOK")
+                return
+            with open(filename, "rb") as f:
+                data = f.read()
+                g.send_mail("FILEDATA", data)
+                return
 
 def directory():
     isMod = False
@@ -107,15 +108,16 @@ def directory():
         
         # copy file from client to server
         # elif (mod == "COPYTO"):
+        #     g.send_mail("DEL","OK")
         #     client.sendall("OK".encode())
         #     copy_file_to_server(client)
         #     isMod = False
 
-        # # copy file from server to client
-        # elif (mod == "COPY"):
-        #     client.sendall("OK".encode())
-        #     copyFileToClient(client)
-        #     isMod = False
+        # copy file from server to client
+        elif (mod == "COPY"):
+            g.send_mail("COPY","OK")
+            copy_file_to_client()
+            isMod = False
 
         elif "XOAFILE" in mod:
             g.send_mail("DEL","OK")

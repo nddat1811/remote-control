@@ -270,6 +270,7 @@ class DirectoryTree_UI(Canvas):
                 while len(data) < filesize:
                     packet = self.client.recv(999999)
                     data += packet
+                
                 with open(destPath + "\\" + filename, "wb") as f:
                     f.write(data)
                 messagebox.showinfo(message = "Copy successfully!")
