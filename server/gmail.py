@@ -1,4 +1,7 @@
 from __future__ import print_function
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+import mimetypes
 
 import os.path
 
@@ -11,51 +14,86 @@ import base64
 import email
 from bs4 import BeautifulSoup
 from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 from requests import HTTPError
 from email.message import EmailMessage
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
-    "https://www.googleapis.com/auth/gmail.send",
-    "https://www.googleapis.com/auth/gmail.modify",
-    'https://www.googleapis.com/auth/gmail.readonly',
+    "https://mail.google.com/"
 ]
-def send_message(cmd:str, messageBody:str, attachments: list=None):
-    """Create and send an email message
-    Print the returned  message id
-    Returns: Message object, including message id    """
+# "https://www.googleapis.com/auth/gmail.send",
+#     "https://www.googleapis.com/auth/gmail.modify",
+#     'https://www.googleapis.com/auth/gmail.readonly',
+def send_message_with_attachment(
+    cmd,
+    file,
+    ):
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            path = os.path.abspath('credentials.json')
+            flow = InstalledAppFlow.from_client_secrets_file(
+                path, SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next runserver\credentials.json
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
 
+    service = build('gmail', 'v1', credentials=creds)
+    message = MIMEMultipart()
+    message_body = cmd
+    msg = MIMEText(message_body)
+    message.attach(msg)
 
-    creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    message['to'] = 'testpython18mmt@gmail.com'
+    message['subject'] = 'server'
+
+    (content_type, encoding) = mimetypes.guess_type(file)
+
+    if content_type is None or encoding is not None:
+        content_type = 'application/octet-stream'
+
+    (main_type, sub_type) = content_type.split('/', 1)
+
+    if main_type == 'text':
+        with open(file, 'rb') as f:
+            msg = MIMEText(f.read().decode('utf-8'), _subtype=sub_type)
+
+    elif main_type == 'image':
+        with open(file, 'rb') as f:
+            msg = MIMEImage(f.read(), _subtype=sub_type)
+    
+    elif main_type == 'audio':
+        with open(file, 'rb') as f:
+            msg = MIMEAudio(f.read(), _subtype=sub_type)
+
+    else:
+        with open(file, 'rb') as f:
+            msg = MIMEBase(main_type, sub_type)
+            msg.set_payload(f.read())
+
+    filename = os.path.basename(file)
+    msg.add_header('Content-Disposition', 'attachment', filename=filename)
+    message.attach(msg)
+
+    raw_message = \
+        base64.urlsafe_b64encode(message.as_string().encode('utf-8'))
+    
+    #gửi msg
+    msg_send = {'raw': raw_message.decode('utf-8')}
     try:
-        service = build('gmail', 'v1', credentials=creds)
-        message = EmailMessage()
+        message = service.users().messages().send(userId="me",
+                body=msg_send).execute()
 
-        message.set_content(cmd+":"+messageBody)
-
-        # I added this part
-        if attachments:
-            for attachment in attachments:
-                with open(attachment, 'rb') as content_file:
-                    content = content_file.read()
-                    message.add_attachment(content, maintype='application', subtype= (attachment.split('.')[1]), filename=attachment)
-
-        message['to'] = 'testpython18mmt@gmail.com'
-        message['subject'] = 'server'
-        # encoded message
-        encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
-
-        create_message = {
-            'raw': encoded_message
-        }
-        # pylint: disable=E1101
-        send_message = (service.users().messages().send
-                        (userId="me", body=create_message).execute())
-        print(F'Message Id: {send_message["id"]}')
-    except HttpError as error:
-        print(F'An error occurred: {error}')
-        send_message = None
-
+        print('Message Id: {}'.format(message['id']))
+    except Exception as e:
+        print('An error occurred: {}'.format(e))
 def send_mail(cmd, package):
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
