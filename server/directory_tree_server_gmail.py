@@ -84,10 +84,9 @@ def copy_file_to_client():
             if filename == "-1" or not os.path.isfile(filename):
                 g.send_mail("FILE_TO_CLIENT", "NOTOK")
                 return
-            with open(filename, "rb") as f:
-                data = f.read()
-                g.send_mail("FILEDATA", data)
-                return
+            cmd = 'FILEDATA'
+            g.send_mail_with_attachment(cmd, filename)
+            return
 
 def directory():
     isMod = False

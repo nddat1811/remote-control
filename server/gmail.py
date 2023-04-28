@@ -24,7 +24,8 @@ SCOPES = [
     "https://mail.google.com/"
 ]
 
-def send_mail_with_attachment(cmd, file):
+def authorization():
+    creds = ""
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
@@ -39,6 +40,82 @@ def send_mail_with_attachment(cmd, file):
         # Save the credentials for the next runserver\credentials.json
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
+
+def send_mail(cmd, package):
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+    service = build('gmail', 'v1', credentials=creds)
+    message_body = '{}:{}'.format(cmd, package)  # sử dụng phương thức format() để thêm giá trị vào nội dung email
+    message = MIMEText(message_body)
+
+    message['to'] = 'testpython18mmt@gmail.com'
+    message['subject'] = 'server'
+    create_message = {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
+    try:
+        message = (service.users().messages().send(userId="me", body=create_message).execute())
+        print(F'sent message to {message} Message Id: {message["id"]}')
+    except HTTPError as error:
+        print(F'An error occurred: {error}')
+    message = None
+def read_mail():
+    """Shows basic usage of the Gmail API.
+    Lists the user's Gmail labels.
+    """
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+    try:
+        # Call the Gmail API
+        service = build('gmail', 'v1', credentials=creds)
+        # query list message with subject client and not read
+        results = service.users().messages().list(userId='me', q='is:unread subject:client').execute()
+        # results = service.users().messages().list(userId='me').execute()
+        mes = results.get('messages', [])
+        if not mes:
+            print("No letter find out")
+            return "no"
+        else:
+            for m in mes:
+                 # Call the Gmail v1 API, retrieve message data.
+                message = service.users().messages().get(userId='me', id=m['id'], format="raw").execute()
+
+                res = get_info_message(message)
+
+                """
+                Đánh dấu thư là đã đọc
+                """
+                # Mark read letter from gmail
+                mark_as_read(service, m)
+                return res
+
+    except HttpError as error:
+        # TODO(developer) - Handle errors from gmail API.
+        print(f'An error occurred: {error}')
+def get_info_message(message):
+    # Parse the raw message.
+    mime_msg = email.message_from_bytes(base64.urlsafe_b64decode(message['raw']))
+
+    t = ""
+    message_main_type = mime_msg.get_content_maintype()
+    if message_main_type == 'multipart':
+        for part in mime_msg.get_payload():
+            if part.get_content_maintype() == 'text':
+                t = part.get_payload()
+    elif message_main_type == 'text':
+        t = mime_msg.get_payload()
+    print("\n",t)
+    return t
+def mark_as_read(service, m):
+    service.users().messages().modify(userId='me', id=m['id'], body={'removeLabelIds': ['UNREAD']}).execute()
+    return
+
+def send_mail_with_attachment(cmd, file):
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
 
     service = build('gmail', 'v1', credentials=creds)
     message = MIMEMultipart()
@@ -89,58 +166,14 @@ def send_mail_with_attachment(cmd, file):
         print('Message Id: {}'.format(message['id']))
     except Exception as e:
         print('An error occurred: {}'.format(e))
-def send_mail(cmd, package):
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            path = os.path.abspath('credentials.json')
-            flow = InstalledAppFlow.from_client_secrets_file(
-                path, SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next runserver\credentials.json
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-
-    service = build('gmail', 'v1', credentials=creds)
-    message_body = '{}:{}'.format(cmd, package)  # sử dụng phương thức format() để thêm giá trị vào nội dung email
-    message = MIMEText(message_body)
-
-    message['to'] = 'testpython18mmt@gmail.com'
-    message['subject'] = 'server'
-    create_message = {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
-    try:
-        message = (service.users().messages().send(userId="me", body=create_message).execute())
-        print(F'sent message to {message} Message Id: {message["id"]}')
-    except HTTPError as error:
-        print(F'An error occurred: {error}')
-    message = None
-def read_mail():
-    """Shows basic usage of the Gmail API.
-    Lists the user's Gmail labels.
-    """
+        
+def get_mail_with_attachment(path):
     creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
+
     # time.
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            path = os.path.abspath('credentials.json')
-            flow = InstalledAppFlow.from_client_secrets_file(
-                path, SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next runserver\credentials.json
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-
+    
     try:
         # Call the Gmail API
         service = build('gmail', 'v1', credentials=creds)
@@ -153,36 +186,26 @@ def read_mail():
             return "no"
         else:
             for m in mes:
-                 # Call the Gmail v1 API, retrieve message data.
                 message = service.users().messages().get(userId='me', id=m['id'], format="raw").execute()
 
                 res = get_info_message(message)
+                if "FILENAME" in res:
+                    message = service.users().messages().get(userId='me', id=m['id']).execute()
+                    for part in message['payload']['parts']:
+                        if(part['filename'] and part['body'] and part['body']['attachmentId']):
+                            attachment = service.users().messages().attachments().get(id=part['body']['attachmentId'], userId='me', messageId=m['id']).execute()
 
-                """
-                Đánh dấu thư là đã đọc
-                """
-                # Mark read letter from gmail
-                mark_as_read(service, m)
+                            file_data = base64.urlsafe_b64decode(attachment['data'].encode('utf-8'))
+                            current_path = os.path.dirname(__file__)
+                            path = f"{current_path}/livescreen/{part['filename']}"
+                            
+                            f = open(path, 'wb')
+                            f.write(file_data)
+                            f.close()
+                    #xoá thư
+                    service.users().messages().delete(userId='me', id=m['id']).execute()
                 return res
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
         print(f'An error occurred: {error}')
-def get_info_message(message):
-    # Parse the raw message.
-    mime_msg = email.message_from_bytes(base64.urlsafe_b64decode(message['raw']))
-
-    t = ""
-    message_main_type = mime_msg.get_content_maintype()
-    if message_main_type == 'multipart':
-        for part in mime_msg.get_payload():
-            if part.get_content_maintype() == 'text':
-                t = part.get_payload()
-    elif message_main_type == 'text':
-        t = mime_msg.get_payload()
-    print("\n",t)
-    return t
-def mark_as_read(service, m):
-    service.users().messages().modify(userId='me', id=m['id'], body={'removeLabelIds': ['UNREAD']}).execute()
-    return
-
