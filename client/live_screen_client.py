@@ -67,6 +67,7 @@ class Desktop_UI(Canvas):
                 packet = self.client.recv(999999)
                 data += packet
 
+            print("anh:", data)
             img_PIL = Image.open(io.BytesIO(data)).resize((960, 540), Image.ANTIALIAS)
             img_tk = ImageTk.PhotoImage(img_PIL)
             self.label.configure(image=img_tk)

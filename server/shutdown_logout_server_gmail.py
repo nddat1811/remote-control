@@ -1,5 +1,5 @@
 import os
-import gmailread as g
+import gmail as g
 
 def shutdown_logout():
     while True:

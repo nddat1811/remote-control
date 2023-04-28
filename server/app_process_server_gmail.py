@@ -1,6 +1,6 @@
 import  pickle, psutil, struct
 import os
-import gmailread as g
+import gmail as g
 
 
 def list_apps():

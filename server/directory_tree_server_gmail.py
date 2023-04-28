@@ -1,6 +1,6 @@
 import  pickle
 import os
-import gmailread as g
+import gmail as g
 
 BUFSIZE = 1024 * 4
 SEPARATOR = "<SEPARATOR>"

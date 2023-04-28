@@ -1,6 +1,6 @@
 import re, winreg, json
 import os
-import gmailread as g
+import gmail as g
 
 
 def parse_data(full_path):

@@ -1,7 +1,7 @@
 import pynput
 import pynput.keyboard as kb
 import keyboard
-import gmailread as g
+import gmail as g
 
 ishook = 0
 
