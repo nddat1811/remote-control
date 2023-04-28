@@ -37,13 +37,11 @@ def query_value(full_path):
 
 
 def get_value(full_path):
-    print("valpath:", full_path)
     value_list = parse_data(full_path)
     try:
         opened_key = winreg.OpenKey(getattr(winreg, value_list[0]), value_list[1], 0, winreg.KEY_READ)
         value_of_value, value_type = winreg.QueryValueEx(opened_key, value_list[2])
         winreg.CloseKey(opened_key)
-        print("val:", value_of_value)
         return ["1", value_of_value]
     except:
         return ["0", "0"]
@@ -102,7 +100,6 @@ def delete_value(full_path):
     value_list = parse_data(full_path)
     try:
         opened_key = winreg.OpenKey(getattr(winreg, value_list[0]), value_list[1], 0, winreg.KEY_WRITE)
-        print("del:", opened_key)
         winreg.DeleteValue(opened_key, value_list[2])
         winreg.CloseKey(opened_key)
         
@@ -141,8 +138,6 @@ def delete_key(full_path):
 def registry():
     while True:
         header = g.read_mail()
-        print(header)
-        # header = client.recv(BUFSIZE).decode("utf8")
         if("STOP_EDIT_REGISTRY" in header):
             break
         elif "REGISTRY_CMD" in header:
@@ -156,12 +151,6 @@ def registry():
             value = msg['value']
             v_type = msg['v_type']
             res = ['0','0']
-
-            # print("id:",ID)
-            # print("fpath:", full_path)
-            # print("name:", name_value)
-            # print("value:",value)
-            # print("type:", v_type)
 
             #ID==0 run file.reg
             #path is detail of file .reg

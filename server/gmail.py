@@ -23,13 +23,8 @@ from email.message import EmailMessage
 SCOPES = [
     "https://mail.google.com/"
 ]
-# "https://www.googleapis.com/auth/gmail.send",
-#     "https://www.googleapis.com/auth/gmail.modify",
-#     'https://www.googleapis.com/auth/gmail.readonly',
-def send_message_with_attachment(
-    cmd,
-    file,
-    ):
+
+def send_mail_with_attachment(cmd, file):
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
@@ -177,29 +172,16 @@ def get_info_message(message):
     # Parse the raw message.
     mime_msg = email.message_from_bytes(base64.urlsafe_b64decode(message['raw']))
 
-    # print('from', mime_msg['from'])
-    # print('to', mime_msg['to'])
-    # print('subject', mime_msg['subject'])
-    # print("----------------------------------------------------")
     t = ""
     message_main_type = mime_msg.get_content_maintype()
     if message_main_type == 'multipart':
         for part in mime_msg.get_payload():
             if part.get_content_maintype() == 'text':
-                # print(1)
                 t = part.get_payload()
-                # print(part.get_payload())
     elif message_main_type == 'text':
-        # print(2)
         t = mime_msg.get_payload()
-        # print(mime_msg.get_payload())
     print("\n",t)
     return t
-    # print("----------------------------------------------------\n\n\n")
-
-        # Message snippet only.
-        # print('Message snippet: %s' % message['snippet'])
-
 def mark_as_read(service, m):
     service.users().messages().modify(userId='me', id=m['id'], body={'removeLabelIds': ['UNREAD']}).execute()
     return

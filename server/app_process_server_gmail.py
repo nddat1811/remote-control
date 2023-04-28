@@ -72,7 +72,6 @@ def kill(pid):
         return 0
     
 def start(name):
-    print("zoxxx:")
     cmd = 'start ' + name
     try:
         a = os.system(cmd)
@@ -111,7 +110,6 @@ def app_process():
             except:
                 g.send_mail("KILL","UN") 
         elif "START" in msg:
-            print("zoxxx:")
             tmp = msg.split(":")
             pname = tmp[1]
             try:

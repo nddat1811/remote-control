@@ -17,7 +17,6 @@ def capture_screen(client):
         img.save(img_bytes, format='PNG')
         data = img_bytes.getvalue()
         
-        print("da:", len(data))
         # send frame size
         client.sendall(bytes(str(len(data)), "utf8"))
 

