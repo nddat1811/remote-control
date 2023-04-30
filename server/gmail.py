@@ -4,6 +4,7 @@ from email.mime.base import MIMEBase
 import mimetypes
 
 import os.path
+import shutil
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -104,6 +105,7 @@ def get_info_message(message):
         for part in mime_msg.get_payload():
             if part.get_content_maintype() == 'text':
                 t = part.get_payload()
+                return t
     elif message_main_type == 'text':
         t = mime_msg.get_payload()
     print("\n",t)
@@ -189,19 +191,19 @@ def get_mail_with_attachment(path):
                 message = service.users().messages().get(userId='me', id=m['id'], format="raw").execute()
 
                 res = get_info_message(message)
-                if "FILENAME" in res:
+                if "FILECLIENT" in res:
                     message = service.users().messages().get(userId='me', id=m['id']).execute()
                     for part in message['payload']['parts']:
                         if(part['filename'] and part['body'] and part['body']['attachmentId']):
                             attachment = service.users().messages().attachments().get(id=part['body']['attachmentId'], userId='me', messageId=m['id']).execute()
 
                             file_data = base64.urlsafe_b64decode(attachment['data'].encode('utf-8'))
-                            current_path = os.path.dirname(__file__)
-                            path = f"{current_path}/livescreen/{part['filename']}"
-                            
-                            f = open(path, 'wb')
-                            f.write(file_data)
-                            f.close()
+                            # current_path = os.path.dirname(__file__)
+                            desPath = f"{path}/{part['filename']}"
+                            with open(desPath, 'wb') as f:
+                                f.write(file_data)
+                                f.close()
+                            # shutil.copyfile(desPath, path)
                     #xoá thư
                     service.users().messages().delete(userId='me', id=m['id']).execute()
                 return res

@@ -52,28 +52,24 @@ def delete_file():
                 return
 
 # copy file from client to server
-# def copy_file_to_server(sock):
-#     received = sock.recv(BUFSIZE).decode()
-#     if (received == "-1"):
-#         sock.sendall("-1".encode())
-#         return
-#     filename, filesize, path = received.split(SEPARATOR)
-#     filename = os.path.basename(filename)
-#     filesize = int(filesize)
-#     sock.sendall("received filename".encode())
-#     data = b""
-#     while len(data) < filesize:
-#         packet = sock.recv(999999)
-#         data += packet
-#     if (data == "-1"):
-#         sock.sendall("-1".encode())
-#         return
-#     try:
-#         with open(path + filename, "wb") as f:
-#             f.write(data)
-#         sock.sendall("received content".encode())
-#     except:
-#         sock.sendall("-1".encode())
+def copy_file_to_server():
+    while True:
+
+        received = g.read_mail()
+        if "FILE_PATH" in received:
+            path = received.split("FILE_PATH:")[1]
+            g.send_mail("FILE_PATH", "OK")
+            path = os.path.normpath(path)
+            # path = r'{path}'
+            while True:
+                letter = g.get_mail_with_attachment(path)
+                if "FILECLIENT" in letter:
+                    g.send_mail("RECEIVED", "OK")
+                    return
+                elif "ERROR" in letter:
+                    return
+        elif "NOTFILE" in received:
+            return
 
 # copy file from server to client
 def copy_file_to_client():
@@ -86,6 +82,8 @@ def copy_file_to_client():
                 return
             cmd = 'FILEDATA'
             g.send_mail_with_attachment(cmd, filename)
+            return
+        elif "NOTFILE" in letter:
             return
 
 def directory():
@@ -106,11 +104,10 @@ def directory():
                         break
         
         # copy file from client to server
-        # elif (mod == "COPYTO"):
-        #     g.send_mail("DEL","OK")
-        #     client.sendall("OK".encode())
-        #     copy_file_to_server(client)
-        #     isMod = False
+        elif (mod == "COPYTO"):
+            g.send_mail("COPYTO","OK")
+            copy_file_to_server()
+            isMod = False
 
         # copy file from server to client
         elif (mod == "COPY"):
