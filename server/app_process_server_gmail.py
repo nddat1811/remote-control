@@ -1,4 +1,4 @@
-import  pickle, psutil, struct
+import  psutil 
 import os
 import gmail as g
 
