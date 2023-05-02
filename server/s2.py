@@ -6,6 +6,7 @@ import registry_server_gmail as rs
 import live_screen_server_gmail as ls
 import gmail as g
 import uuid
+import tkinter as tk
 
 
 def mac_address():
@@ -30,10 +31,11 @@ def live_screen():
     ls.capture_screen()
     return
 
-def Connect():
+def Connect(root):
     while True:
         cmd = g.read_mail()
         if "QUIT" in cmd:
+            root.destroy()
             return
         if "MAC" in cmd:
             mac_address()
@@ -49,28 +51,29 @@ def Connect():
             registry()
         elif "SD_LO" in cmd:
             shutdown_logout() 
-
-# def create_window():
-#     # create Tk
-#     root = tk.Tk()
-#     # set window size
-#     root.geometry("200x200")
-#     # set name
-#     root.title("Server")
-#     # set background color #B4E4FF
-#     root['bg'] = '#B4E4FF'
-
-#     # create button OPEN
-#     tk.Button(root, text = "OPEN", width = 10, height = 2, fg = '#FFFFFF', bg = '#2B3467', 
-#         borderwidth=0, highlightthickness=0, command = Connect, relief="flat").place(x = 100, y = 100, anchor = "center")
     
-#     # Vòng lặp chạy chương trình
-#     root.mainloop()
+
+def create_window():
+    # create Tk
+    root = tk.Tk()
+    # set window size
+    root.geometry("200x200")
+    # set name
+    root.title("Server")
+    # set background color #B4E4FF
+    root['bg'] = '#B4E4FF'
+
+    # create button OPEN
+    tk.Button(root, text = "OPEN", width = 10, height = 2, fg = '#FFFFFF', bg = '#2B3467', 
+        borderwidth=0, highlightthickness=0, command = lambda: Connect(root), relief="flat").place(x = 100, y = 100, anchor = "center")
+    
+    # Vòng lặp chạy chương trình
+    root.mainloop()
 
 
 # create_window()
 if __name__ == '__main__':
-    Connect()
+    create_window()
     # read_mail()
     # while True:
     #     read_mail()
